@@ -1,0 +1,21 @@
+{
+  "name": "lanyout",
+  "version": "0.0.1",
+  "description": "Experimental simple rendering engine with WebGL and WebAssembly",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-asmjs-debug": "sh scripts/build-asmjs-debug.sh",
+    "build-asmjs-release": "sh scripts/build-asmjs-release.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LastLeaf/lanyout.git"
+  },
+  "author": "Fu Boquan <bqfu@163.com> (LastLeaf)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LastLeaf/lanyout/issues"
+  },
+  "homepage": "https://github.com/LastLeaf/lanyout#readme"
+}

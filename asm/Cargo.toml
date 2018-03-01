@@ -1,0 +1,6 @@
+[package]
+name = "lanyout"
+version = "0.1.0"
+authors = ["LastLeaf <bqfu@163.com>"]
+
+[dependencies]
