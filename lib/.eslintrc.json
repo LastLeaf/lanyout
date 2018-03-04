@@ -1,6 +1,6 @@
 {
   "parserOptions": {
-    "ecmaVersion": 5,
+    "ecmaVersion": 7,
     "impliedStrict": true,
     "sourceType": "module",
     "ecmaFeatures": {
@@ -11,9 +11,9 @@
   "env": {
     "browser": true,
     "node": false,
-    "commonjs": false,
-    "amd": true,
-    "jquery": true,
+    "commonjs": true,
+    "amd": false,
+    "jquery": false,
     "mocha": false
   },
 

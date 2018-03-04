@@ -1,6 +1,4 @@
-extern {
-    fn sample_callback(arg: i32) -> i32;
-}
+mod lib_interfaces;
 
 #[no_mangle]
 pub extern "C" fn plus(a: i32, b: i32) -> i32 {
@@ -8,9 +6,8 @@ pub extern "C" fn plus(a: i32, b: i32) -> i32 {
 }
 
 fn main() {
-    println!("Hello world!");
     unsafe {
-        sample_callback(0x1000);
+        lib_interfaces::init_lib();
     }
 }
 
