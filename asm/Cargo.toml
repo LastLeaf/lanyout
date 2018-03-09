@@ -1,6 +1,14 @@
 [package]
-name = "lanyout-asm"
+name = "lanyout"
 version = "0.1.0"
 authors = ["LastLeaf <bqfu@163.com>"]
+
+[lib]
+name = "lanyout"
+path = "src/lib.rs"
+
+[[bin]]
+name = "lanyout-main"
+path = "src/main.rs"
 
 [dependencies]

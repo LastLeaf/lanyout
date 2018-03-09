@@ -20,10 +20,21 @@ impl Drop for Canvas {
 }
 
 impl Canvas {
+    pub fn set_canvas_size(&mut self, w: i32, h: i32) {
+        lib!(set_canvas_size(self.index, w, h));
+    }
     pub fn set_clear_color(&mut self, r: f64, g: f64, b: f64, a: f64) {
         lib!(set_clear_color(self.index, r, g, b, a));
     }
     pub fn clear(&mut self) {
         lib!(clear(self.index));
     }
+}
+
+pub fn test() -> i32 {
+    let mut canvas = Canvas::new(0);
+    canvas.set_canvas_size(400, 300);
+    canvas.set_clear_color(0., 1., 1., 0.5);
+    canvas.clear();
+    return 0;
 }

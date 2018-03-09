@@ -100,13 +100,13 @@ gulp.task('compile-asm-release', ['generate-lib-interfaces-release'], function(c
 })
 
 gulp.task('build-release', ['compile-asm-release'], function(cb) {
-  return gulp.src(['./lib/bin/lanyout-lib.min.js', './asm/target/asmjs-unknown-emscripten/release/lanyout-asm.js'])
+  return gulp.src(['./lib/bin/lanyout-lib.min.js', './asm/target/asmjs-unknown-emscripten/release/lanyout-main.js'])
     .pipe(concat('lanyout.min.js'))
     .pipe(gulp.dest('./bin/'))
 })
 
 gulp.task('build-debug-with-sourcemap', ['compile-asm-debug'], function(cb) {
-  return gulp.src(['./lib/bin/lanyout-lib.js', './asm/target/asmjs-unknown-emscripten/debug/deps/lanyout_asm-*.js'])
+  return gulp.src(['./lib/bin/lanyout-lib.js', './asm/target/asmjs-unknown-emscripten/debug/deps/lanyout_main-*.js'])
     .pipe(sourcemaps.init({loadMaps: true}))
     .pipe(concat('lanyout.js'))
     .pipe(convertSourceMapPath())
@@ -115,7 +115,7 @@ gulp.task('build-debug-with-sourcemap', ['compile-asm-debug'], function(cb) {
 })
 
 gulp.task('build-debug', ['compile-asm-debug'], function(cb) {
-  return gulp.src(['./lib/bin/lanyout-lib.js', './asm/target/asmjs-unknown-emscripten/debug/deps/lanyout_asm-*.js'])
+  return gulp.src(['./lib/bin/lanyout-lib.js', './asm/target/asmjs-unknown-emscripten/debug/deps/lanyout_main-*.js'])
     .pipe(sourcemaps.init({loadMaps: true}))
     .pipe(concat('lanyout.js'))
     .pipe(convertSourceMapPath())
