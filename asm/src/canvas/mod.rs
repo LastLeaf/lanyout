@@ -1,6 +1,6 @@
-use std::sync::{Arc, Mutex};
+pub mod animation;
 
-use super::lib_interfaces;
+use std::sync::{Arc, Mutex};
 use super::frame;
 
 pub struct CanvasContext {
@@ -8,38 +8,43 @@ pub struct CanvasContext {
 }
 
 pub struct Canvas {
-    ctx: Arc<Mutex<CanvasContext>>
+    arc_ctx: Arc<Mutex<CanvasContext>>
 }
 
 impl Canvas {
     pub fn new(index: i32) -> Self {
         lib!(bind_canvas(index));
-        let ctx = Arc::new(Mutex::new(CanvasContext {
+        let arc_ctx = Arc::new(Mutex::new(CanvasContext {
             index
         }));
-        frame::bind_frame(ctx.clone());
+        frame::bind(arc_ctx.clone());
         return Canvas {
-            ctx
+            arc_ctx
         };
     }
     pub fn get_context_mutex(&self) -> Arc<Mutex<CanvasContext>> {
-        return self.ctx.clone();
+        return self.arc_ctx.clone();
     }
     pub fn context<F>(&mut self, f: F) where F: Fn(&mut CanvasContext) {
-        f(&mut *self.ctx.lock().unwrap());
+        f(&mut *self.arc_ctx.lock().unwrap());
     }
 }
 
 impl Drop for Canvas {
     fn drop(&mut self) {
-        frame::unbind_frame(self.ctx.clone());
-        println!("Dropped!!!");
+        frame::unbind(self.arc_ctx.clone());
     }
 }
 
 impl Drop for CanvasContext {
     fn drop(&mut self) {
         lib!(unbind_canvas(self.index));
+    }
+}
+
+impl frame::Frame for CanvasContext {
+    fn frame(&mut self, timestamp: f64) {
+        println!("Update canvas: {}", timestamp);
     }
 }
 
@@ -55,19 +60,17 @@ impl CanvasContext {
     }
 }
 
-impl frame::Frame for CanvasContext {
-    fn frame(&mut self, timestamp: f64) {
-        println!("Update canvas: {}", timestamp);
-    }
-}
+pub mod test {
+    use super::Canvas;
 
-pub fn test() -> i32 {
-    let mut canvas = Canvas::new(0);
-    Canvas::new(1);
-    canvas.context(|ctx| {
-        ctx.set_canvas_size(400, 300);
-        ctx.set_clear_color(0., 1., 1., 0.5);
-        ctx.clear();
-    });
-    return 0;
+    pub fn test() -> i32 {
+        let mut canvas = Canvas::new(0);
+        Canvas::new(1);
+        canvas.context(|ctx| {
+            ctx.set_canvas_size(400, 300);
+            ctx.set_clear_color(0., 1., 1., 0.5);
+            ctx.clear();
+        });
+        return 0;
+    }
 }

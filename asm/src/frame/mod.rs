@@ -10,22 +10,30 @@ lazy_static! {
     static ref FRAME_OBJECTS: Arc<Mutex<Vec<ArcFrame>>> = Arc::new(Mutex::new(vec![]));
 }
 
-pub fn bind_frame(fo: Arc<Mutex<Frame>>) {
-    FRAME_OBJECTS.lock().unwrap().push(fo);
+pub fn bind(fo: Arc<Mutex<Frame>>) -> Arc<Mutex<Frame>> {
+    let mut frame_objects = FRAME_OBJECTS.lock().unwrap();
+    if frame_objects.len() == 0 {
+        lib!(enable_animation_frame());
+    }
+    frame_objects.push(fo.clone());
+    return fo;
 }
 
-pub fn unbind_frame(fo: Arc<Mutex<Frame>>) -> bool {
+pub fn unbind(fo: Arc<Mutex<Frame>>) -> bool {
     let mut frame_objects = FRAME_OBJECTS.lock().unwrap();
     return match frame_objects.iter().position(|ref x| Arc::ptr_eq(&x, &fo)) {
         None => false,
         Some(index) => {
             frame_objects.remove(index);
+            if frame_objects.len() == 0 {
+                lib!(disable_animation_frame());
+            }
             return true;
         }
     };
 }
 
-pub fn generate_frame(timestamp: f64) {
+pub fn generate(timestamp: f64) {
     FRAME_OBJECTS.lock().unwrap().iter_mut().for_each(|x| {
         x.lock().unwrap().frame(timestamp)
     });

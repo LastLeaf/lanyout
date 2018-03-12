@@ -3,12 +3,12 @@ extern crate lazy_static;
 
 mod utils;
 mod lib_interfaces;
-pub mod canvas;
 pub mod frame;
+pub mod canvas;
 
 #[no_mangle]
 pub extern "C" fn animation_frame(timestamp: f64) {
-    frame::generate_frame(timestamp);
+    frame::generate(timestamp);
 }
 
 pub fn init() {
