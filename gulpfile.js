@@ -10,7 +10,6 @@ var libCompilerConfig = require('./lib/webpack.config')
 var execShellScript = function(path, cwd, cb) {
   execFile('sh', [path], {cwd: cwd}, function(err, stdout, stderr) {
     if (err) {
-      console.error(stderr)
       cb(err)
       return
     }
