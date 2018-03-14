@@ -1,5 +1,3 @@
-pub mod animation;
-
 use std::sync::{Arc, Mutex};
 use super::frame;
 
@@ -43,8 +41,9 @@ impl Drop for CanvasContext {
 }
 
 impl frame::Frame for CanvasContext {
-    fn frame(&mut self, timestamp: f64) {
+    fn frame(&mut self, timestamp: f64) -> bool {
         println!("Update canvas: {}", timestamp);
+        return true;
     }
 }
 

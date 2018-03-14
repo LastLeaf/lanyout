@@ -1,7 +1,12 @@
+pub mod animation;
+
 use std::sync::{Arc, Mutex};
 
-pub trait Frame: Send + Sync {
-    fn frame(&mut self, timestamp: f64);
+pub type AnimationObject = animation::AnimationObject;
+pub type Animation = animation::Animation;
+
+pub trait Frame: Send {
+    fn frame(&mut self, timestamp: f64) -> bool;
 }
 
 type ArcFrame = Arc<Mutex<Frame>>;
@@ -35,6 +40,19 @@ pub fn unbind(fo: Arc<Mutex<Frame>>) -> bool {
 
 pub fn generate(timestamp: f64) {
     FRAME_OBJECTS.lock().unwrap().iter_mut().for_each(|x| {
-        x.lock().unwrap().frame(timestamp)
+        let ret = x.lock().unwrap().frame(timestamp);
+        if ret == false {
+            unbind(x.clone());
+        }
     });
 }
+
+
+pub mod test {
+    pub fn test() -> i32 {
+        let mut err = 0;
+        err += super::animation::test::test();
+        return err;
+    }
+}
+
