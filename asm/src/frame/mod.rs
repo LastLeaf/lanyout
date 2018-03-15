@@ -2,9 +2,6 @@ pub mod animation;
 
 use std::sync::{Arc, Mutex};
 
-pub type AnimationObject = animation::AnimationObject;
-pub type Animation = animation::Animation;
-
 pub trait Frame: Send {
     fn frame(&mut self, timestamp: f64) -> bool;
 }
@@ -47,7 +44,6 @@ pub fn generate(timestamp: f64) {
     });
 }
 
-
 pub mod test {
     pub fn test() -> i32 {
         let mut err = 0;
@@ -55,4 +51,3 @@ pub mod test {
         return err;
     }
 }
-
