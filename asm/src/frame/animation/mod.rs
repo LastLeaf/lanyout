@@ -10,7 +10,7 @@ pub trait Animation: Send {
 }
 
 pub trait TimingAnimation: Send {
-    fn progress(&mut self, progress: f64, current_time: f64, total_time: f64);
+    fn progress(&mut self, current_value: f64, current_time: f64, total_time: f64);
 }
 
 pub struct AnimationObject (Arc<Mutex<AnimationObjectInner>>);

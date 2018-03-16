@@ -35,8 +35,8 @@ pub mod test {
 
     pub struct TestAnimation();
     impl TimingAnimation for TestAnimation {
-        fn progress(&mut self, progress: f64, _current_time: f64, _total_time: f64) {
-            println!("Animation progress: {}", progress);
+        fn progress(&mut self, current_value: f64, _current_time: f64, _total_time: f64) {
+            println!("Animation progress: {}", current_value);
         }
     }
 

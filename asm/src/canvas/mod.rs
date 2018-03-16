@@ -5,6 +5,7 @@ pub struct CanvasContext {
     index: i32
 }
 
+#[derive(Clone)]
 pub struct Canvas {
     arc_ctx: Arc<Mutex<CanvasContext>>
 }
@@ -61,15 +62,27 @@ impl CanvasContext {
 
 pub mod test {
     use super::Canvas;
+    use super::super::frame::animation::{TimingAnimation, AnimationObject, LinearTiming};
 
     pub fn test() -> i32 {
         let mut canvas = Canvas::new(0);
-        Canvas::new(1);
+
         canvas.context(|ctx| {
             ctx.set_canvas_size(400, 300);
-            ctx.set_clear_color(0., 1., 1., 0.5);
-            ctx.clear();
         });
+
+        struct BackgroundColorAni(Canvas);
+        impl TimingAnimation for BackgroundColorAni {
+            fn progress(&mut self, current_value: f64, _current_time: f64, _total_time: f64) {
+                self.0.context(|ctx| {
+                    ctx.set_clear_color(0., current_value, current_value, 1.);
+                    ctx.clear();
+                })
+            }
+        }
+
+        AnimationObject::new(Box::new(LinearTiming::new(BackgroundColorAni(canvas.clone()), 0., 1.))).exec(0, 3000.);
+
         return 0;
     }
 }
