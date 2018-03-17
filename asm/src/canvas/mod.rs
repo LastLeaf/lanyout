@@ -1,6 +1,11 @@
 use std::sync::{Arc, Mutex};
 use super::frame;
 
+mod element;
+
+pub type Element = element::Element;
+pub type EmptyElement = element::EmptyElement;
+
 pub struct CanvasContext {
     index: i32
 }
@@ -43,6 +48,7 @@ impl Drop for CanvasContext {
 
 impl frame::Frame for CanvasContext {
     fn frame(&mut self, timestamp: f64) -> bool {
+        // TODO
         println!("Update canvas: {}", timestamp);
         return true;
     }
@@ -83,6 +89,8 @@ pub mod test {
 
         AnimationObject::new(Box::new(LinearTiming::new(BackgroundColorAni(canvas.clone()), 0., 1.))).exec(0, 3000.);
 
-        return 0;
+        let mut err = 0;
+        err += super::element::test::test();
+        return err;
     }
 }
