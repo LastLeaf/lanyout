@@ -7,7 +7,8 @@ pub type Element = element::Element;
 pub type EmptyElement = element::EmptyElement;
 
 pub struct CanvasContext {
-    index: i32
+    index: i32,
+    root_element: Arc<Mutex<Element>>,
 }
 
 #[derive(Clone)]
@@ -19,24 +20,24 @@ impl Canvas {
     pub fn new(index: i32) -> Self {
         lib!(bind_canvas(index));
         let arc_ctx = Arc::new(Mutex::new(CanvasContext {
-            index
+            index,
+            root_element: element! {
+                EmptyElement
+            }
         }));
         frame::bind(arc_ctx.clone());
         return Canvas {
             arc_ctx
         };
     }
+    pub fn destroy(&mut self) {
+        frame::unbind(self.arc_ctx.clone());
+    }
     pub fn get_context_mutex(&self) -> Arc<Mutex<CanvasContext>> {
         return self.arc_ctx.clone();
     }
     pub fn context<F>(&mut self, f: F) where F: Fn(&mut CanvasContext) {
         f(&mut *self.arc_ctx.lock().unwrap());
-    }
-}
-
-impl Drop for Canvas {
-    fn drop(&mut self) {
-        frame::unbind(self.arc_ctx.clone());
     }
 }
 
@@ -47,9 +48,9 @@ impl Drop for CanvasContext {
 }
 
 impl frame::Frame for CanvasContext {
-    fn frame(&mut self, timestamp: f64) -> bool {
-        // TODO
-        println!("Update canvas: {}", timestamp);
+    fn frame(&mut self, _timestamp: f64) -> bool {
+        self.clear();
+        self.root_element.lock().unwrap().draw(self);
         return true;
     }
 }
@@ -82,7 +83,6 @@ pub mod test {
             fn progress(&mut self, current_value: f64, _current_time: f64, _total_time: f64) {
                 self.0.context(|ctx| {
                     ctx.set_clear_color(0., current_value, current_value, 1.);
-                    ctx.clear();
                 })
             }
         }

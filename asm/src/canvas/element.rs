@@ -3,9 +3,11 @@
 use std::sync::{Arc, Mutex};
 use std::fmt;
 
+use super::CanvasContext;
+
 pub trait ElementContent: Send + fmt::Debug {
     fn name(&self) -> &'static str;
-    fn draw(&self, element: &Element);
+    fn draw(&self, ctx: &CanvasContext, element: &Element);
 }
 
 #[derive(Debug)]
@@ -29,8 +31,14 @@ impl Element {
             content
         }
     }
-    pub fn draw(&self) {
-        self.content.draw(self);
+    pub fn name(&self) -> &'static str {
+        self.content.name()
+    }
+    pub fn draw(&self, ctx: &CanvasContext) {
+        self.content.draw(ctx, self);
+        self.children.iter().for_each(|child| {
+            child.lock().unwrap().draw(ctx);
+        });
     }
 }
 
@@ -53,35 +61,41 @@ impl ElementContent for EmptyElement {
     fn name(&self) -> &'static str {
         "EmptyElement"
     }
-    fn draw(&self, _element: &Element) {
+    fn draw(&self, _ctx: &CanvasContext, _element: &Element) {
         // do nothing
+        // println!("Attempted to draw an EmptyElement");
     }
 }
 
-#[macro_export]
 macro_rules! __element_children {
-    ($v:ident,) => {};
-    ($v:ident, $e:ident ( $($a:tt)* ) { $($c:tt)* } $($r:tt)*) => {
-        $v.children.push(element! { $e ( $($a)* ) { $($c)* } });
-        __element_children! ($v, $($r)*)
+    ($v:ident, ) => {};
+    ($v:ident, $k:ident = $a:expr; $($r:tt)*) => {
+        $v.$k = $a;
+        __element_children! ($v, $($r)*);
+    };
+    ($v:ident, $e:ident; $($r:tt)*) => {
+        __element_children! ($v, $e {}; $($r)*);
+    };
+    ($v:ident, $e:ident { $($c:tt)* }; $($r:tt)*) => {
+        let mut temp_element_child = element! ( $e { $($c)* });
+        $v.children.push(temp_element_child);
+        __element_children! ($v, $($r)*);
     }
 }
 
 #[macro_export]
 macro_rules! element {
-    ($e:ident ( $($k:ident = $v:expr),* ) { $($c:tt)* }) => {
+    ($e:ident) => {
+        element! ($e {})
+    };
+    ($e:ident { $($c:tt)* }) => {{
+        let mut temp_element = Arc::new(Mutex::new(Element::new(Box::new($e::new()))));
         {
-            let elem_arc = Arc::new(Mutex::new(Element::new(Box::new($e::new()))));
-            {
-                let element = &mut *elem_arc.lock().unwrap();
-                $(
-                    element.$k = $v;
-                ),*
-                __element_children! (element, $($c)*)
-            }
-            elem_arc
+            let mut _temp_element_inner = temp_element.lock().unwrap();
+            __element_children! (_temp_element_inner, $($c)*);
         }
-    }
+        temp_element
+    }}
 }
 
 pub mod test {
@@ -89,14 +103,18 @@ pub mod test {
     use std::sync::{Arc, Mutex};
 
     pub fn test() -> i32 {
-        let elem = element! {
-            EmptyElement() {
-                EmptyElement() {}
-                EmptyElement() {}
-                EmptyElement() {}
+        let _elem = element! {
+            EmptyElement {
+                left = 10.;
+                top = 20.;
+                EmptyElement;
+                EmptyElement {
+                    EmptyElement;
+                    top = 20.;
+                };
             }
         };
-        println!("{}", elem.lock().unwrap());
+        // println!("{}", elem.lock().unwrap().name());
         return 0;
     }
 }

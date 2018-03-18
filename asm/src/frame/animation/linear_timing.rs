@@ -25,7 +25,7 @@ impl<T: TimingAnimation> Animation for LinearTiming<T> {
     }
     fn end(&mut self, _total_frames: i32, total_time: f64) {
         self.current_value = self.end_value;
-        self.animation.progress(1., total_time, total_time);
+        self.animation.progress(self.end_value, total_time, total_time);
     }
 }
 
@@ -35,8 +35,8 @@ pub mod test {
 
     pub struct TestAnimation();
     impl TimingAnimation for TestAnimation {
-        fn progress(&mut self, current_value: f64, _current_time: f64, _total_time: f64) {
-            println!("Animation progress: {}", current_value);
+        fn progress(&mut self, _current_value: f64, _current_time: f64, _total_time: f64) {
+            println!("Animation progress: {}", _current_value);
         }
     }
 
