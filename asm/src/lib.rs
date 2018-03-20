@@ -3,6 +3,7 @@ extern crate lazy_static;
 
 mod utils;
 mod lib_interfaces;
+pub mod ctx;
 pub mod frame;
 pub mod canvas;
 
