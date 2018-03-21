@@ -1,6 +1,6 @@
 #![macro_use]
 
-use std::sync::{Arc, Mutex};
+use super::super::ctx::Ctx;
 use std::fmt;
 
 use super::CanvasContext;
@@ -10,9 +10,8 @@ pub trait ElementContent: Send + fmt::Debug {
     fn draw(&self, ctx: &CanvasContext, element: &Element);
 }
 
-#[derive(Debug)]
 pub struct Element {
-    pub children: Vec<Arc<Mutex<Element>>>,
+    pub children: Vec<Ctx<Element>>,
     pub left: f64,
     pub top: f64,
     pub width: f64,
@@ -37,7 +36,7 @@ impl Element {
     pub fn draw(&self, ctx: &CanvasContext) {
         self.content.draw(ctx, self);
         self.children.iter().for_each(|child| {
-            child.lock().unwrap().draw(ctx);
+            child.get().draw(ctx);
         });
     }
 }
@@ -89,9 +88,9 @@ macro_rules! element {
         element! ($e {})
     };
     ($e:ident { $($c:tt)* }) => {{
-        let mut temp_element = Arc::new(Mutex::new(Element::new(Box::new($e::new()))));
+        let mut temp_element = Ctx::new(Element::new(Box::new($e::new())));
         {
-            let mut _temp_element_inner = temp_element.lock().unwrap();
+            let mut _temp_element_inner = temp_element.get();
             __element_children! (_temp_element_inner, $($c)*);
         }
         temp_element
@@ -100,7 +99,7 @@ macro_rules! element {
 
 pub mod test {
     use super::{Element, EmptyElement};
-    use std::sync::{Arc, Mutex};
+    use super::super::super::ctx::Ctx;
 
     pub fn test() -> i32 {
         let _elem = element! {

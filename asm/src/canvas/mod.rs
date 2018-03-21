@@ -1,4 +1,4 @@
-use std::sync::{Arc, Mutex};
+use super::ctx::Ctx;
 use super::frame;
 
 mod element;
@@ -6,38 +6,39 @@ mod element;
 pub type Element = element::Element;
 pub type EmptyElement = element::EmptyElement;
 
+#[derive(Clone)]
 pub struct CanvasContext {
     index: i32,
-    root_element: Arc<Mutex<Element>>,
+    root_element: Ctx<Element>,
 }
 
 #[derive(Clone)]
 pub struct Canvas {
-    arc_ctx: Arc<Mutex<CanvasContext>>
+    arc_ctx: Ctx<CanvasContext>
 }
 
 impl Canvas {
     pub fn new(index: i32) -> Self {
         lib!(bind_canvas(index));
-        let arc_ctx = Arc::new(Mutex::new(CanvasContext {
+        let arc_ctx = Ctx::new(CanvasContext {
             index,
             root_element: element! {
                 EmptyElement
             }
-        }));
+        });
         frame::bind(arc_ctx.clone());
         return Canvas {
             arc_ctx
         };
     }
-    pub fn destroy(&mut self) {
-        frame::unbind(self.arc_ctx.clone());
+    pub fn destroy(canvas: &Ctx<Canvas>) {
+        frame::unbind(canvas.clone());
     }
-    pub fn get_context_mutex(&self) -> Arc<Mutex<CanvasContext>> {
+    pub fn get_context_mutex(&self) -> Ctx<CanvasContext> {
         return self.arc_ctx.clone();
     }
     pub fn context<F>(&mut self, f: F) where F: Fn(&mut CanvasContext) {
-        f(&mut *self.arc_ctx.lock().unwrap());
+        f(&mut *self.arc_ctx.get());
     }
 }
 
@@ -50,7 +51,7 @@ impl Drop for CanvasContext {
 impl frame::Frame for CanvasContext {
     fn frame(&mut self, _timestamp: f64) -> bool {
         self.clear();
-        self.root_element.lock().unwrap().draw(self);
+        self.root_element.get().draw(self);
         return true;
     }
 }
@@ -68,6 +69,7 @@ impl CanvasContext {
 }
 
 pub mod test {
+    use super::super::ctx::Ctx;
     use super::Canvas;
     use super::super::frame::animation::{TimingAnimation, AnimationObject, LinearTiming};
 
@@ -87,7 +89,8 @@ pub mod test {
             }
         }
 
-        AnimationObject::new(Box::new(LinearTiming::new(BackgroundColorAni(canvas.clone()), 0., 1.))).exec(0, 3000.);
+        let ani_obj = Ctx::new(AnimationObject::new(Ctx::new(LinearTiming::new(BackgroundColorAni(canvas.clone()), 0., 1.))));
+        AnimationObject::exec(&ani_obj, 0, 3000.);
 
         let mut err = 0;
         err += super::element::test::test();

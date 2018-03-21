@@ -1,6 +1,6 @@
 mod linear_timing;
 
-use std::sync::{Arc, Mutex};
+use super::super::ctx::Ctx;
 
 pub type LinearTiming<T> = linear_timing::LinearTiming<T>;
 
@@ -13,45 +13,42 @@ pub trait TimingAnimation: Send {
     fn progress(&mut self, current_value: f64, current_time: f64, total_time: f64);
 }
 
-pub struct AnimationObject (Arc<Mutex<AnimationObjectInner>>);
-
-struct AnimationObjectInner {
+pub struct AnimationObject {
     start_time: f64,
     total_time: f64,
     current_frame: i32,
     total_frames: i32,
-    animation: Box<Animation>
+    animation: Ctx<Animation>
+}
+
+impl super::Frame for AnimationObject {
+    fn frame(&mut self, timestamp: f64) -> bool {
+        if self.total_time <= timestamp - self.start_time && self.current_frame >= self.total_frames {
+            self.animation.get().end(self.total_frames, self.total_time);
+            return false;
+        }
+        self.animation.get().frame(self.current_frame, self.total_frames, timestamp - self.start_time, self.total_time);
+        self.current_frame += 1;
+        return true;
+    }
 }
 
 impl AnimationObject {
-    pub fn new(ani: Box<Animation>) -> Self {
-        return AnimationObject (Arc::new(Mutex::new(AnimationObjectInner {
+    pub fn new(ani: Ctx<Animation>) -> Self {
+        AnimationObject {
             start_time: 0.,
             total_time: 0.,
             current_frame: 0,
             total_frames: 0,
             animation: ani,
-        })))
-    }
-    pub fn exec(self, total_frames: i32, total_time: f64) {
-        {
-            let obj = &mut self.0.lock().unwrap();
-            obj.total_frames = total_frames;
-            obj.total_time = total_time;
         }
-        super::bind(self.0);
     }
-}
-
-impl super::Frame for AnimationObjectInner {
-    fn frame(&mut self, timestamp: f64) -> bool {
-        if self.total_time <= timestamp - self.start_time && self.current_frame >= self.total_frames {
-            self.animation.end(self.total_frames, self.total_time);
-            return false;
-        }
-        self.animation.frame(self.current_frame, self.total_frames, timestamp - self.start_time, self.total_time);
-        self.current_frame += 1;
-        return true;
+    pub fn exec(ani_obj: &Ctx<AnimationObject>, total_frames: i32, total_time: f64) {
+        ani_obj.ctx(|x| {
+            x.total_frames = total_frames;
+            x.total_time = total_time;
+        });
+        super::bind(ani_obj.clone());
     }
 }
 

@@ -30,6 +30,7 @@ impl<T: TimingAnimation> Animation for LinearTiming<T> {
 }
 
 pub mod test {
+    use super::super::super::super::ctx::Ctx;
     use super::super::{AnimationObject, TimingAnimation};
     use super::{LinearTiming};
 
@@ -41,7 +42,8 @@ pub mod test {
     }
 
     pub fn test() -> i32 {
-        AnimationObject::new(Box::new(LinearTiming::new(TestAnimation(), 0., 100.))).exec(0, 3000.);
+        let ani_obj = Ctx::new(AnimationObject::new(Ctx::new(LinearTiming::new(TestAnimation(), 0., 100.))));
+        AnimationObject::exec(&ani_obj, 0, 3000.);
         return 0;
     }
 }
