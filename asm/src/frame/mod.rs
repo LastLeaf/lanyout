@@ -10,7 +10,7 @@ lazy_static! {
     static ref FRAME_OBJECTS: Ctx<Vec<Ctx<Frame>>> = Ctx::new(vec![]);
 }
 
-pub fn bind(fo: &Ctx<Frame>) {
+pub fn bind(fo: Ctx<Frame>) {
     let mut frame_objects = FRAME_OBJECTS.get();
     if frame_objects.len() == 0 {
         lib!(enable_animation_frame());
