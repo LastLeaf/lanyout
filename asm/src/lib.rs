@@ -1,3 +1,5 @@
+#![feature(unsize, coerce_unsized)]
+
 #[macro_use]
 extern crate lazy_static;
 
