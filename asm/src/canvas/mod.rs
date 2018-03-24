@@ -14,31 +14,31 @@ pub struct CanvasContext {
 
 #[derive(Clone)]
 pub struct Canvas {
-    arc_ctx: Ctx<CanvasContext>
+    context: Ctx<CanvasContext>
 }
 
 impl Canvas {
     pub fn new(index: i32) -> Self {
         lib!(bind_canvas(index));
-        let arc_ctx = Ctx::new(CanvasContext {
+        let context = Ctx::new(CanvasContext {
             index,
             root_element: element! {
                 EmptyElement
             }
         });
-        frame::bind(arc_ctx.clone());
+        frame::bind(context.clone());
         return Canvas {
-            arc_ctx
+            context
         };
     }
-    pub fn destroy(canvas: &Ctx<Canvas>) {
-        frame::unbind(canvas.clone());
+    pub fn destroy(&mut self) {
+        frame::unbind(self.context.clone());
     }
-    pub fn get_context_mutex(&self) -> Ctx<CanvasContext> {
-        return self.arc_ctx.clone();
+    pub fn get_context(&self) -> Ctx<CanvasContext> {
+        return self.context.clone();
     }
     pub fn context<F>(&mut self, f: F) where F: Fn(&mut CanvasContext) {
-        f(&mut *self.arc_ctx.get());
+        f(&mut *self.context.get());
     }
 }
 
@@ -89,8 +89,8 @@ pub mod test {
             }
         }
 
-        let ani_obj = Ctx::new(AnimationObject::new(Ctx::new(LinearTiming::new(BackgroundColorAni(canvas.clone()), 0., 1.))));
-        AnimationObject::exec(&ani_obj, 0, 3000.);
+        let mut ani_obj = Ctx::new(AnimationObject::new(Ctx::new(LinearTiming::new(BackgroundColorAni(canvas.clone()), 0., 1.))));
+        AnimationObject::exec(&mut ani_obj, 0, 3000.);
 
         let mut err = 0;
         err += super::element::test::test();

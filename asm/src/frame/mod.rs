@@ -10,8 +10,6 @@ lazy_static! {
     static ref FRAME_OBJECTS: Ctx<Vec<Ctx<Frame>>> = Ctx::new(vec![]);
 }
 
-// static FRAME_OBJECTS: *mut Ctx<Vec<Ctx<Frame>>> = 0 as *mut Ctx<Vec<Ctx<Frame>>>;
-
 pub fn bind(fo: Ctx<Frame>) {
     let mut frame_objects = FRAME_OBJECTS.get();
     if frame_objects.len() == 0 {
@@ -42,10 +40,6 @@ pub fn generate(timestamp: f64) {
         }
     });
 }
-
-// pub fn init() {
-//     FRAME_OBJECTS = Box::into_raw(Box::new(Ctx::new(vec![])));
-// }
 
 pub mod test {
     pub fn test() -> i32 {

@@ -42,8 +42,8 @@ pub mod test {
     }
 
     pub fn test() -> i32 {
-        let ani_obj = Ctx::new(AnimationObject::new(Ctx::new(LinearTiming::new(TestAnimation(), 0., 100.))));
-        AnimationObject::exec(&ani_obj, 0, 3000.);
+        let mut ani_obj = Ctx::new(AnimationObject::new(Ctx::new(LinearTiming::new(TestAnimation(), 0., 100.))));
+        AnimationObject::exec(&mut ani_obj, 0, 3000.);
         return 0;
     }
 }

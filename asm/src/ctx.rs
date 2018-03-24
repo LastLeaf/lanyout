@@ -25,10 +25,10 @@ impl<T: ?Sized> Ctx<T> {
             content: (Arc::new(Mutex::new(c)))
         }
     }
-    pub fn ctx<F>(&mut self, f: F) where F: Fn(&mut T) {
+    pub fn ctx<F>(&self, f: F) where F: Fn(&mut T) {
         f(&mut *self.content.lock().unwrap())
     }
-    pub fn get(&mut self) -> MutexGuard<T> {
+    pub fn get(&self) -> MutexGuard<T> {
         self.content.lock().unwrap()
     }
     pub fn ptr_eq(ctx1: &Ctx<T>, ctx2: &Ctx<T>) -> bool {
@@ -43,19 +43,4 @@ macro_rules! ctx {
             content: Arc::new(Mutex::new($x))
         }
     }
-}
-
-// test
-
-struct Implementor ();
-impl super::frame::Frame for Implementor {
-    fn frame(&mut self, _timestamp: f64) -> bool {
-        return false
-    }
-}
-fn test() {
-    super::frame::bind(Ctx::new(Implementor{}));
-}
-fn test2() {
-    super::frame::bind(ctx!(Implementor{}));
 }

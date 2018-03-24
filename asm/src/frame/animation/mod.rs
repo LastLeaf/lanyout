@@ -43,7 +43,7 @@ impl AnimationObject {
             animation: ani,
         }
     }
-    pub fn exec(ani_obj: &Ctx<AnimationObject>, total_frames: i32, total_time: f64) {
+    pub fn exec(ani_obj: &mut Ctx<AnimationObject>, total_frames: i32, total_time: f64) {
         ani_obj.ctx(|x| {
             x.total_frames = total_frames;
             x.total_time = total_time;
