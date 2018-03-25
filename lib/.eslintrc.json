@@ -18,8 +18,8 @@
   },
 
   "globals": {
-    "_": false,
-    "wx": false
+    "__lanyoutAsm__": false,
+    "Float32Array": false
   },
 
   "extends": "eslint:recommended",
@@ -106,6 +106,6 @@
     "no-path-concat": 0,
     "no-sync": 2,
 
-	"indent": [0, 2, { "VariableDeclarator": 2 }]
+	  "indent": [0, 2, { "VariableDeclarator": 2 }]
   }
 }

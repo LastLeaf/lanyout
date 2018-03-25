@@ -22,7 +22,7 @@ impl Canvas {
         lib!(bind_canvas(index));
         let context = Ctx::new(CanvasContext {
             index,
-            root_element: element! {
+            root_element: element_tree! {
                 EmptyElement
             }
         });

@@ -1,8 +1,12 @@
 #![macro_use]
 
-use super::super::ctx::Ctx;
-use std::fmt;
+mod empty_element;
+mod image;
+pub type EmptyElement = empty_element::EmptyElement;
+pub type Image = image::Image;
 
+use std::fmt;
+use super::super::ctx::Ctx;
 use super::CanvasContext;
 
 pub trait ElementContent: Send + fmt::Debug {
@@ -47,25 +51,6 @@ impl fmt::Display for Element {
     }
 }
 
-#[derive(Debug)]
-pub struct EmptyElement {}
-
-impl EmptyElement {
-    pub fn new() -> Self {
-        EmptyElement {}
-    }
-}
-
-impl ElementContent for EmptyElement {
-    fn name(&self) -> &'static str {
-        "EmptyElement"
-    }
-    fn draw(&self, _ctx: &CanvasContext, _element: &Element) {
-        // do nothing
-        // println!("Attempted to draw an EmptyElement");
-    }
-}
-
 macro_rules! __element_children {
     ($v:ident, ) => {};
     ($v:ident, $k:ident = $a:expr; $($r:tt)*) => {
@@ -76,16 +61,16 @@ macro_rules! __element_children {
         __element_children! ($v, $e {}; $($r)*);
     };
     ($v:ident, $e:ident { $($c:tt)* }; $($r:tt)*) => {
-        let mut temp_element_child = element! ( $e { $($c)* });
+        let mut temp_element_child = element_tree! ( $e { $($c)* });
         $v.children.push(temp_element_child);
         __element_children! ($v, $($r)*);
     }
 }
 
 #[macro_export]
-macro_rules! element {
+macro_rules! element_tree {
     ($e:ident) => {
-        element! ($e {})
+        element_tree! ($e {})
     };
     ($e:ident { $($c:tt)* }) => {{
         let mut temp_element = Ctx::new(Element::new(Box::new($e::new())));
@@ -102,7 +87,7 @@ pub mod test {
     use super::super::super::ctx::Ctx;
 
     pub fn test() -> i32 {
-        let _elem = element! {
+        let _elem = element_tree! {
             EmptyElement {
                 left = 10.;
                 top = 20.;
