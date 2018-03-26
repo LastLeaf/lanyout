@@ -1,8 +1,8 @@
 attribute vec2 aDrawPos;
 attribute vec2 aTexPos;
-attribute int aTexIndex;
+attribute float aTexIndex;
 varying highp vec2 vTexPos;
-varying highp vec2 vTexIndex;
+varying highp float vTexIndex;
 uniform vec2 uAreaSize;
 
 void main(void) {

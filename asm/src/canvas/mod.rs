@@ -9,6 +9,9 @@ pub type EmptyElement = element::EmptyElement;
 #[derive(Clone)]
 pub struct CanvasContext {
     index: i32,
+    tex_size: i32,
+    tex_count: i32,
+    tex_max_draws: i32,
     root_element: Ctx<Element>,
 }
 
@@ -22,9 +25,15 @@ impl Canvas {
         lib!(bind_canvas(index));
         let context = Ctx::new(CanvasContext {
             index,
+            tex_size: lib!(tex_get_size(index)),
+            tex_count: lib!(tex_get_count(index)),
+            tex_max_draws: lib!(tex_get_max_draws()),
             root_element: element_tree! {
                 EmptyElement
-            }
+            },
+        });
+        context.ctx(|x| {
+            println!("Canvas binded: tex size {}, count {}, max batched draws {}", x.tex_size, x.tex_count, x.tex_max_draws);
         });
         frame::bind(context.clone());
         return Canvas {
