@@ -10,6 +10,12 @@ pub mod frame;
 pub mod canvas;
 
 #[no_mangle]
+pub extern "C" fn callback(callback_ptr: *mut lib_interfaces::Callback, ret_code: i32) {
+    let mut callback = unsafe { Box::from_raw(callback_ptr) };
+    callback.callback(ret_code);
+}
+
+#[no_mangle]
 pub extern "C" fn animation_frame(timestamp: f64) {
     frame::generate(timestamp);
 }

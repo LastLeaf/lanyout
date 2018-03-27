@@ -32,9 +32,6 @@ impl Canvas {
                 EmptyElement
             },
         });
-        context.ctx(|x| {
-            println!("Canvas binded: tex size {}, count {}, max batched draws {}", x.tex_size, x.tex_count, x.tex_max_draws);
-        });
         frame::bind(context.clone());
         return Canvas {
             context
@@ -69,7 +66,7 @@ impl CanvasContext {
     pub fn set_canvas_size(&mut self, w: i32, h: i32) {
         lib!(set_canvas_size(self.index, w, h));
     }
-    pub fn set_clear_color(&mut self, r: f64, g: f64, b: f64, a: f64) {
+    pub fn set_clear_color(&mut self, r: f32, g: f32, b: f32, a: f32) {
         lib!(set_clear_color(self.index, r, g, b, a));
     }
     pub fn clear(&mut self) {
@@ -93,7 +90,7 @@ pub mod test {
         impl TimingAnimation for BackgroundColorAni {
             fn progress(&mut self, current_value: f64, _current_time: f64, _total_time: f64) {
                 self.0.context(|ctx| {
-                    ctx.set_clear_color(0., current_value, current_value, 1.);
+                    ctx.set_clear_color(0., current_value as f32, current_value as f32, 1.);
                 })
             }
         }
