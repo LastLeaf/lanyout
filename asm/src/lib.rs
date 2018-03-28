@@ -23,3 +23,7 @@ pub extern "C" fn animation_frame(timestamp: f64) {
 pub fn init() {
     lib!(init_lib());
 }
+
+pub fn main_loop() {
+    lib!(emscripten_exit_with_live_runtime());
+}

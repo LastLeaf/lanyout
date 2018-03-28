@@ -55,7 +55,7 @@ var generateLibInterfaces = function(path) {
         if (i) argList += ', '
         argList += 'arg' + i
       }
-      slices.push(toUnderlineCase(funcName) + ': function(' + argList + ') { window.__lanyoutLib__.' + funcName + '(' + argList + ') },')
+      slices.push(toUnderlineCase(funcName) + ': function(' + argList + ') { return window.__lanyoutLib__.' + funcName + '(' + argList + ') },')
     }
   }
   slices.push('})')

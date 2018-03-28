@@ -11,4 +11,5 @@ pub extern "C" fn test() -> i32 {
 fn main() {
     lanyout::init();
     test();
+    lanyout::main_loop();
 }

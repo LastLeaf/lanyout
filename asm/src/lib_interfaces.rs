@@ -3,6 +3,8 @@
 use std::os::raw::c_char;
 
 extern {
+    pub fn emscripten_exit_with_live_runtime();
+
     pub fn init_lib();
     pub fn enable_animation_frame();
     pub fn disable_animation_frame();
