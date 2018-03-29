@@ -6,6 +6,7 @@ extern {
     pub fn emscripten_exit_with_live_runtime();
 
     pub fn init_lib();
+    pub fn timeout(ms: i32, cbPtr: *mut Callback);
     pub fn enable_animation_frame();
     pub fn disable_animation_frame();
 
