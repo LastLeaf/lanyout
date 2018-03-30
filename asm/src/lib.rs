@@ -9,9 +9,11 @@ pub mod ctx;
 pub mod frame;
 pub mod canvas;
 
+use std::any::Any;
+
 #[no_mangle]
-pub extern "C" fn callback(callback_ptr: *mut lib_interfaces::Callback, ret_code: i32) {
-    let mut callback: Box<lib_interfaces::Callback> = unsafe { Box::from_raw(callback_ptr) };
+pub extern "C" fn callback(callback_ptr: *mut (), ret_code: i32) {
+    let mut callback: Box<lib_interfaces::Callback> = unsafe { (*(callback_ptr as *mut Box<Any>)).downcast().unwrap() };
     callback.callback(ret_code); // TODO dynamic dispatch failed?
 }
 

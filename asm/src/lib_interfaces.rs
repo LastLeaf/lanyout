@@ -6,7 +6,7 @@ extern {
     pub fn emscripten_exit_with_live_runtime();
 
     pub fn init_lib();
-    pub fn timeout(ms: i32, cbPtr: *mut Callback);
+    pub fn timeout(ms: i32, cbPtr: *mut ());
     pub fn enable_animation_frame();
     pub fn disable_animation_frame();
 
@@ -24,7 +24,7 @@ extern {
     pub fn tex_set_text(canvasIndex: i32, id: i32, texIndex: i32, texX: f64, texY: f64, texWidth: f64, texHeight: f64);
     pub fn tex_set_image(canvasIndex: i32, id: i32, texIndex: i32, texX: f64, texY: f64, texWidth: f64, texHeight: f64);
 
-    pub fn image_load_url(canvasIndex: i32, id: i32, url: *mut c_char, cbPtr: *mut Callback);
+    pub fn image_load_url(canvasIndex: i32, id: i32, url: *mut c_char, cbPtr: *mut ());
 
     pub fn text_bind_font_family(canvasIndex: i32, id: i32, fontFamily: *mut c_char);
     pub fn text_unbind_font_family(canvasIndex: i32, id: i32);
@@ -39,8 +39,8 @@ pub trait Callback {
     fn callback(&mut self, ret_code: i32);
 }
 
-pub fn register_callback(callback: Box<Callback>) -> *mut Callback {
-    Box::into_raw(callback)
+pub fn register_callback(callback: Box<Callback>) -> *mut () {
+    Box::into_raw(callback) as *mut ()
 }
 
 #[macro_export]
