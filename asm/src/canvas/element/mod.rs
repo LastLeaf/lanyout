@@ -6,10 +6,11 @@ pub type EmptyElement = empty_element::EmptyElement;
 pub type Image = image::Image;
 
 use std::fmt;
+use std::any::Any;
 use super::super::ctx::Ctx;
 use super::CanvasContext;
 
-pub trait ElementContent: Send + fmt::Debug {
+pub trait ElementContent: Any + Send + fmt::Debug {
     fn name(&self) -> &'static str;
     fn draw(&self, ctx: &CanvasContext, element: &Element);
 }
@@ -52,18 +53,26 @@ impl fmt::Display for Element {
 }
 
 macro_rules! __element_children {
-    ($v:ident, ) => {};
-    ($v:ident, $k:ident = $a:expr; $($r:tt)*) => {
+    ($v:ident, $t:ident, ) => {};
+    ($v:ident, $t:ident, $k:ident = $a:expr; $($r:tt)*) => {
         $v.$k = $a;
-        __element_children! ($v, $($r)*);
+        __element_children! ($v, $t, $($r)*);
     };
-    ($v:ident, $e:ident; $($r:tt)*) => {
-        __element_children! ($v, $e {}; $($r)*);
+    ($v:ident, $t:ident, . $k:ident = $a:expr; $($r:tt)*) => {
+        $v.get_content_mut::<$t>().$k = $a;
+        __element_children! ($v, $t, $($r)*);
     };
-    ($v:ident, $e:ident { $($c:tt)* }; $($r:tt)*) => {
+    ($v:ident, $t:ident, . $k:ident ( $($a:expr),* ); $($r:tt)*) => {
+        $v.get_content_mut::<$t>().$k($($a),*);
+        __element_children! ($v, $t, $($r)*);
+    };
+    ($v:ident, $t:ident, $e:ident; $($r:tt)*) => {
+        __element_children! ($v, $t, $e {}; $($r)*);
+    };
+    ($v:ident, $t:ident, $e:ident { $($c:tt)* }; $($r:tt)*) => {
         let mut temp_element_child = element_tree! ( $e { $($c)* });
         $v.children.push(temp_element_child);
-        __element_children! ($v, $($r)*);
+        __element_children! ($v, $t, $($r)*);
     }
 }
 
@@ -76,14 +85,14 @@ macro_rules! element_tree {
         let mut temp_element = Ctx::new(Element::new(Box::new($e::new())));
         {
             let mut _temp_element_inner = temp_element.get();
-            __element_children! (_temp_element_inner, $($c)*);
+            __element_children! (_temp_element_inner, $e, $($c)*);
         }
         temp_element
     }}
 }
 
 pub mod test {
-    use super::{Element, EmptyElement};
+    use super::{Element, EmptyElement, Image};
     use super::super::super::ctx::Ctx;
 
     pub fn test() -> i32 {
@@ -95,6 +104,9 @@ pub mod test {
                 EmptyElement {
                     EmptyElement;
                     top = 20.;
+                };
+                Image {
+                    .load("https://avatars0.githubusercontent.com/u/2016597?s=460&v=4");
                 };
             }
         };
