@@ -9,12 +9,10 @@ pub mod ctx;
 pub mod frame;
 pub mod canvas;
 
-use std::any::Any;
-
 #[no_mangle]
-pub extern "C" fn callback(callback_ptr: *mut (), ret_code: i32) {
-    let mut callback: Box<lib_interfaces::Callback> = unsafe { (*(callback_ptr as *mut Box<Any>)).downcast().unwrap() };
-    callback.callback(ret_code); // TODO dynamic dispatch failed?
+pub extern "C" fn callback(callback_ptr: *mut lib_interfaces::Callback, ret_code: i32) {
+    let mut callback: Box<lib_interfaces::Callback> = unsafe { Box::from_raw(callback_ptr) };
+    callback.callback(ret_code);
 }
 
 #[no_mangle]
@@ -33,11 +31,11 @@ pub fn main_loop() {
 
 // test
 struct CustomCb (i32);
-impl lib_interfaces::Callback for CustomCb {
+lib_define_callback!(CustomCb {
     fn callback(&mut self, time: i32) {
-        println!("Date.now: {}", time);
+        println!("{} Date.now: {}", self.0, time);
     }
-}
+});
 fn test() {
-    lib!(timeout(1000, lib_interfaces::register_callback(Box::new(CustomCb(10)))));
+    lib!(timeout(1000, lib_callback!(CustomCb(666))));
 }
