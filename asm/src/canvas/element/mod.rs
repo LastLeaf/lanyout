@@ -44,9 +44,6 @@ impl Element {
             child.get().draw(ctx);
         });
     }
-    pub fn get_content_mut<T: 'static>(&mut self) -> &mut T where T: Sized {
-        (*self.content).as_any_mut().downcast_mut::<T>().unwrap()
-    }
 }
 
 impl fmt::Display for Element {
