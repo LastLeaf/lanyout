@@ -1,5 +1,9 @@
 #![macro_use]
 
+#[macro_use]
+extern crate downcast_rs;
+use downcast_rs::Downcast;
+
 mod empty_element;
 mod image;
 pub type EmptyElement = empty_element::EmptyElement;
@@ -10,10 +14,12 @@ use std::any::Any;
 use super::super::ctx::Ctx;
 use super::CanvasContext;
 
-pub trait ElementContent: Any + Send + fmt::Debug {
+pub trait ElementContent: Downcast + Send + fmt::Debug {
     fn name(&self) -> &'static str;
     fn draw(&self, ctx: &CanvasContext, element: &Element);
 }
+
+impl_downcast!(ElementContent);
 
 pub struct Element {
     pub children: Vec<Ctx<Element>>,
@@ -43,6 +49,9 @@ impl Element {
         self.children.iter().for_each(|child| {
             child.get().draw(ctx);
         });
+    }
+    pub fn get_content_mut<T: ElementContent>(&mut self) -> &mut T {
+        self.content.downcast_mut::<T>().unwrap()
     }
 }
 
