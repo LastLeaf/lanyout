@@ -13,3 +13,4 @@ path = "src/main.rs"
 
 [dependencies]
 lazy_static = "1.0"
+downcast-rs = "1.0.1"

@@ -2,6 +2,8 @@
 
 #[macro_use]
 extern crate lazy_static;
+#[macro_use]
+extern crate downcast_rs;
 
 mod utils;
 mod lib_interfaces;

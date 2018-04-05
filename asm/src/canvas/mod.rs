@@ -12,7 +12,8 @@ pub struct CanvasContext {
     tex_size: i32,
     tex_count: i32,
     tex_max_draws: i32,
-    root_element: Ctx<Element>,
+    image_id_inc: i32,
+    root_element: Option<Ctx<Element>>,
 }
 
 #[derive(Clone)]
@@ -28,12 +29,15 @@ impl Canvas {
             tex_size: lib!(tex_get_size(index)) as i32,
             tex_count: lib!(tex_get_count(index)) as i32,
             tex_max_draws: lib!(tex_get_max_draws()) as i32,
-            root_element: element_tree! {
-                EmptyElement
-            },
+            image_id_inc: 1,
+            root_element: None,
         });
         context.ctx(|x| {
             println!("Canvas binded: tex_size {}; tex_count {}; tex_max_draws {}", x.tex_size, x.tex_count, x.tex_max_draws);
+            let root_element = Some(element! {
+                [x] EmptyElement
+            });
+            x.root_element = root_element;
         });
         frame::bind(context.clone());
         return Canvas {
@@ -60,7 +64,8 @@ impl Drop for CanvasContext {
 impl frame::Frame for CanvasContext {
     fn frame(&mut self, _timestamp: f64) -> bool {
         self.clear();
-        self.root_element.get().draw(self);
+        let root_element = self.root_element.as_mut().unwrap();
+        root_element.get().draw();
         return true;
     }
 }
@@ -74,6 +79,12 @@ impl CanvasContext {
     }
     pub fn clear(&mut self) {
         lib!(clear(self.index));
+    }
+
+    pub fn alloc_image_id(&mut self) -> i32 {
+        let ret = self.image_id_inc + 1;
+        self.image_id_inc += 1;
+        ret
     }
 }
 

@@ -1,7 +1,13 @@
 [[package]]
+name = "downcast-rs"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "lanyout"
 version = "0.1.0"
 dependencies = [
+ "downcast-rs 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -11,4 +17,5 @@ version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [metadata]
+"checksum downcast-rs 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "5b28487662892f2f2755292dfac47435fb72375e3f5861c7a59a76abdfb1e21f"
 "checksum lazy_static 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "c8f31047daa365f19be14b47c29df4f7c3b581832407daabe6ae77397619237d"

@@ -26,6 +26,7 @@ extern {
     pub fn tex_set_image(canvasIndex: i32, id: i32, texIndex: i32, texX: f64, texY: f64, texWidth: f64, texHeight: f64);
 
     pub fn image_load_url(canvasIndex: i32, id: i32, url: *mut c_char, cbPtr: *mut Box<Callback>);
+    pub fn image_unload(canvasIndex: i32, id: i32);
 
     pub fn text_bind_font_family(canvasIndex: i32, id: i32, fontFamily: *mut c_char);
     pub fn text_unbind_font_family(canvasIndex: i32, id: i32);
