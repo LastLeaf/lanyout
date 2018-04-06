@@ -20,7 +20,7 @@ extern {
     pub fn tex_get_size(canvasIndex: i32) -> i32;
     pub fn tex_get_count(canvasIndex: i32) -> i32;
     pub fn tex_get_max_draws() -> i32;
-    pub fn tex_draw(canvasIndex: i32, drawIndex: i32, texIndex: i32, texX: f32, texY: f32, texW: f32, texH: f32, x: f32, y: f32, w: f32, h: f32);
+    pub fn tex_draw(canvasIndex: i32, drawIndex: i32, texIndex: i32, texX: f64, texY: f64, texW: f64, texH: f64, x: f64, y: f64, w: f64, h: f64);
     pub fn tex_draw_end(canvasIndex: i32);
     pub fn tex_set_text(canvasIndex: i32, id: i32, texIndex: i32, texX: f64, texY: f64, texWidth: f64, texHeight: f64);
     pub fn tex_set_image(canvasIndex: i32, id: i32, texIndex: i32, texX: f64, texY: f64, texWidth: f64, texHeight: f64);

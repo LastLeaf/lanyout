@@ -102,9 +102,9 @@ macro_rules! __element_tree {
 
 #[macro_export]
 macro_rules! element {
-    ([$ctx:expr] $($c:tt)*) => {
+    ([$ctx:expr] $($c:tt)*) => {{
         __element_tree! ($ctx, $($c)*)
-    }
+    }}
 }
 
 pub mod test {
@@ -115,8 +115,9 @@ pub mod test {
     pub fn test() -> i32 {
         let canvas = Canvas::new(0);
         let ctx = canvas.get_context();
+        let ctx_mut = &mut *ctx.get();
         let _elem = element! {
-             [&mut *ctx.get()] EmptyElement {
+             [ctx_mut] EmptyElement {
                 left = 10.;
                 top = 20.;
                 EmptyElement;

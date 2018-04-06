@@ -5,14 +5,18 @@ use super::Element;
 #[derive(Debug)]
 pub struct Image {
     canvas_index: i32,
+    image_id: i32,
     loader: Option<ImageLoader>
 }
 
 impl Image {
     pub fn new(ctx: &mut CanvasContext) -> Self {
+        let loader = ImageLoader::new(ctx);
+        let image_id = loader.get_id();
         Image {
             canvas_index: ctx.index,
-            loader: Some(ImageLoader::new(ctx))
+            image_id,
+            loader: Some(loader)
         }
     }
     pub fn load<T: Into<Vec<u8>>>(&mut self, url: T) {
@@ -24,9 +28,15 @@ impl super::ElementContent for Image {
     fn name(&self) -> &'static str {
         "Image"
     }
-    fn draw(&self, _element: &Element) {
+    fn draw(&self, elem: &Element) {
         // do nothing
         // println!("Attempted to draw an EmptyElement");
+        if self.loader.is_some() {
+            return
+        }
+        lib!(tex_set_image(self.canvas_index, self.image_id, self.image_id, elem.left, elem.top, elem.width, elem.height));
+        lib!(tex_draw(self.canvas_index, 0, self.image_id, elem.left, elem.top, elem.width, elem.height, elem.left, elem.top, elem.width, elem.height));
+        lib!(tex_draw_end(self.canvas_index));
     }
 }
 
@@ -42,6 +52,9 @@ impl ImageLoader {
             canvas_index: ctx.index,
             id: ctx.alloc_image_id()
         }
+    }
+    pub fn get_id(&self) -> i32 {
+        self.id
     }
     pub fn load<T: Into<Vec<u8>>>(self, url: T) {
         lib!(image_load_url(self.canvas_index, self.id, CString::new(url).unwrap().into_raw(), lib_callback!(self)));
