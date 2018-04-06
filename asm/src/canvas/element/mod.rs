@@ -113,10 +113,10 @@ pub mod test {
     use super::super::Canvas;
 
     pub fn test() -> i32 {
-        let canvas = Canvas::new(0);
+        let canvas = Canvas::new(1);
         let ctx = canvas.get_context();
         let ctx_mut = &mut *ctx.get();
-        let _elem = element! {
+        let elem = element! {
              [ctx_mut] EmptyElement {
                 left = 10.;
                 top = 20.;
@@ -126,11 +126,15 @@ pub mod test {
                     top = 20.;
                 };
                 Image {
-                    .load("https://avatars0.githubusercontent.com/u/2016597?s=460&v=4");
+                    width = 100.;
+                    height = 100.;
+                    .load("../resources/lastleaf.png");
                 };
             }
         };
-        // println!("{}", elem.lock().unwrap().name());
+        let ctx = canvas.get_context();
+        let root_elem = ctx.get().get_root_element();
+        root_elem.get().children.push(elem);
         return 0;
     }
 }

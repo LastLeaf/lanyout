@@ -30,11 +30,10 @@ impl super::ElementContent for Image {
     }
     fn draw(&self, elem: &Element) {
         // do nothing
-        // println!("Attempted to draw an EmptyElement");
+        // println!("Attempted to draw an Image");
         if self.loader.is_some() {
             return
         }
-        lib!(tex_set_image(self.canvas_index, self.image_id, self.image_id, elem.left, elem.top, elem.width, elem.height));
         lib!(tex_draw(self.canvas_index, 0, self.image_id, elem.left, elem.top, elem.width, elem.height, elem.left, elem.top, elem.width, elem.height));
         lib!(tex_draw_end(self.canvas_index));
     }
@@ -63,7 +62,7 @@ impl ImageLoader {
 
 lib_define_callback! (ImageLoader {
     fn callback(&mut self, ret_code: i32) {
-        println!("Image load result: {} for {} {}", ret_code, self.canvas_index, self.id);
+        lib!(tex_set_image(self.canvas_index, self.id, self.id, 0., 0., 1024., 1024.)); // TODO
     }
 });
 

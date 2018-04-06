@@ -80,6 +80,9 @@ impl CanvasContext {
     pub fn clear(&mut self) {
         lib!(clear(self.index));
     }
+    pub fn get_root_element(&mut self) -> Ctx<Element> {
+        self.root_element.as_mut().unwrap().clone()
+    }
 
     pub fn alloc_image_id(&mut self) -> i32 {
         let ret = self.image_id_inc + 1;
